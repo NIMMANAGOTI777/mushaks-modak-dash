@@ -5,8 +5,8 @@ import { AudioSystem } from '../systems/AudioSystem';
 export type MushakState = 'RUN' | 'JUMP' | 'SLIDE' | 'DEAD';
 
 export class Mushak extends Phaser.Physics.Arcade.Sprite {
-  private currentLaneIndex: number = 1; // 0 = Left (280), 1 = Center (480), 2 = Right (680)
-  private targetX: number = GAME_CONFIG.LANE_X_POSITIONS[1];
+  private currentLaneIndex: number = 1; // 0 = Left, 1 = Center, 2 = Right
+  private targetX: number = 0;
   private mushakState: MushakState = 'RUN';
   private slideTimer?: Phaser.Time.TimerEvent;
   private hasShield: boolean = false;
@@ -18,11 +18,11 @@ export class Mushak extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
+    this.targetX = x;
     this.setOrigin(0.5, 0.85);
     this.setCollideWorldBounds(true);
     this.setGravityY(GAME_CONFIG.GRAVITY);
 
-    // Set forgiving bounding box for running
     this.setupRunHitbox();
 
     // Shield Aura GameObject
@@ -30,7 +30,6 @@ export class Mushak extends Phaser.Physics.Arcade.Sprite {
     this.shieldSprite.setVisible(false);
     this.shieldSprite.setDepth(this.depth + 1);
 
-    // Setup Animations
     this.setupAnimations();
     this.playRunAnimation();
   }
@@ -62,7 +61,6 @@ export class Mushak extends Phaser.Physics.Arcade.Sprite {
   private setupSlideHitbox(): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
     if (body) {
-      // Lower and flatter hitbox during slide/duck
       body.setSize(54, 28);
       body.setOffset(24, 26);
     }
@@ -72,16 +70,18 @@ export class Mushak extends Phaser.Physics.Arcade.Sprite {
     if (this.mushakState === 'DEAD') return;
     if (this.currentLaneIndex > 0) {
       this.currentLaneIndex -= 1;
-      this.targetX = GAME_CONFIG.LANE_X_POSITIONS[this.currentLaneIndex];
+      const lanes = GAME_CONFIG.getLaneXPositions(this.scene.scale.width);
+      this.targetX = lanes[this.currentLaneIndex];
       AudioSystem.getInstance().playSlide();
     }
   }
 
   public moveRight(): void {
     if (this.mushakState === 'DEAD') return;
-    if (this.currentLaneIndex < GAME_CONFIG.LANE_X_POSITIONS.length - 1) {
+    const lanes = GAME_CONFIG.getLaneXPositions(this.scene.scale.width);
+    if (this.currentLaneIndex < lanes.length - 1) {
       this.currentLaneIndex += 1;
-      this.targetX = GAME_CONFIG.LANE_X_POSITIONS[this.currentLaneIndex];
+      this.targetX = lanes[this.currentLaneIndex];
       AudioSystem.getInstance().playSlide();
     }
   }
@@ -89,7 +89,8 @@ export class Mushak extends Phaser.Physics.Arcade.Sprite {
   public jump(): void {
     if (this.mushakState === 'DEAD') return;
     const body = this.body as Phaser.Physics.Arcade.Body;
-    if (body.blocked.down || body.touching.down || this.y >= GAME_CONFIG.GROUND_Y - 5) {
+    const groundY = GAME_CONFIG.getGroundY(this.scene.scale.height);
+    if (body.blocked.down || body.touching.down || this.y >= groundY - 5) {
       if (this.slideTimer) {
         this.slideTimer.remove();
         this.slideTimer = undefined;
@@ -106,10 +107,10 @@ export class Mushak extends Phaser.Physics.Arcade.Sprite {
   public slide(): void {
     if (this.mushakState === 'DEAD') return;
     const body = this.body as Phaser.Physics.Arcade.Body;
+    const groundY = GAME_CONFIG.getGroundY(this.scene.scale.height);
 
-    // Fast-drop if in air
-    if (!body.blocked.down && !body.touching.down && this.y < GAME_CONFIG.GROUND_Y - 10) {
-      this.setVelocityY(750); // fast slam down
+    if (!body.blocked.down && !body.touching.down && this.y < groundY - 10) {
+      this.setVelocityY(750);
     }
 
     if (this.mushakState === 'SLIDE') return;
@@ -193,8 +194,12 @@ export class Mushak extends Phaser.Physics.Arcade.Sprite {
 
   public update(): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
+    const groundY = GAME_CONFIG.getGroundY(this.scene.scale.height);
 
-    // Smooth horizontal lane transition
+    // Keep targetX synced on window resize
+    const lanes = GAME_CONFIG.getLaneXPositions(this.scene.scale.width);
+    this.targetX = lanes[this.currentLaneIndex];
+
     if (Math.abs(this.x - this.targetX) > 2) {
       this.x = Phaser.Math.Linear(this.x, this.targetX, 0.22);
     } else {
@@ -203,14 +208,14 @@ export class Mushak extends Phaser.Physics.Arcade.Sprite {
 
     // Land detection
     if (this.mushakState === 'JUMP') {
-      if ((body.blocked.down || body.touching.down || this.y >= GAME_CONFIG.GROUND_Y - 5) && body.velocity.y >= 0) {
+      if ((body.blocked.down || body.touching.down || this.y >= groundY - 5) && body.velocity.y >= 0) {
         this.mushakState = 'RUN';
         this.setupRunHitbox();
         this.playRunAnimation();
       }
     }
 
-    // Sync Shield position and rotation
+    // Sync Shield position
     if (this.shieldSprite && this.shieldSprite.visible) {
       this.shieldSprite.setPosition(this.x, this.y - 24);
       this.shieldSprite.angle += 2;

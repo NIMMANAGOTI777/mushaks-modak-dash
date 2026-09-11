@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
-import { GAME_CONFIG } from '../config/gameConfig';
 
 /**
  * Generates all game textures procedurally using HTML5 Canvas 2D
  * precisely matching the approved "UI and UX" Master Design System (DESIGN.md).
+ * Includes dedicated high-res vector icon assets (no emoji dependencies).
  */
 export class AssetGenerator {
   public static generateAllTextures(scene: Phaser.Scene): void {
@@ -12,6 +12,7 @@ export class AssetGenerator {
     this.createObstacleSprites(scene);
     this.createEnvironmentTextures(scene);
     this.createUITextures(scene);
+    this.createVectorIcons(scene);
     this.createVFXTextures(scene);
   }
 
@@ -58,7 +59,7 @@ export class AssetGenerator {
     const isSlide = state === 'slide';
     const isJump = state === 'jump';
 
-    // Tail (curled cute mouse tail)
+    // Tail
     ctx.beginPath();
     ctx.strokeStyle = '#E0A0A0';
     ctx.lineWidth = 3.5;
@@ -183,7 +184,7 @@ export class AssetGenerator {
     ctx.ellipse(headX + 5, headY - 2, 4, 5.5, 0.1, 0, Math.PI * 2);
     ctx.fill();
 
-    // Eye Highlight (Sparkle)
+    // Eye Highlight
     ctx.beginPath();
     ctx.fillStyle = '#FFFFFF';
     ctx.arc(headX + 6.5, headY - 4, 1.8, 0, Math.PI * 2);
@@ -191,7 +192,6 @@ export class AssetGenerator {
     ctx.fill();
 
     // Ears
-    // Left/Far Ear
     ctx.beginPath();
     ctx.fillStyle = '#5A463F';
     ctx.arc(headX - 6, headY - 15, 10, 0, Math.PI * 2);
@@ -201,7 +201,6 @@ export class AssetGenerator {
     ctx.arc(headX - 6, headY - 15, 6, 0, Math.PI * 2);
     ctx.fill();
 
-    // Right/Near Ear
     ctx.beginPath();
     ctx.fillStyle = '#6E574E';
     ctx.arc(headX + 2, headY - 14, 11, 0, Math.PI * 2);
@@ -211,7 +210,7 @@ export class AssetGenerator {
     ctx.arc(headX + 2, headY - 14, 7, 0, Math.PI * 2);
     ctx.fill();
 
-    // Sacred Tilak & Chandan on Forehead
+    // Sacred Tilak & Chandan
     ctx.beginPath();
     ctx.fillStyle = '#D32F2F';
     ctx.ellipse(headX + 8, headY - 8, 1.5, 3.5, 0, 0, Math.PI * 2);
@@ -228,13 +227,13 @@ export class AssetGenerator {
   // 2. COLLECTIBLES & POWER-UPS
   // ==========================================
   private static createCollectibleSprites(scene: Phaser.Scene): void {
-    // 2.1 Regular Modak (White/Ivory Steamed)
+    // 2.1 Regular Modak
     this.drawCanvasTexture(scene, 'modak', 54, 58, (ctx) => {
       ctx.translate(27, 30);
       this.drawSingleModak(ctx, '#FFF8E7', '#F5E6CC', '#D4BA96', '#FF7A00', 1.0);
     });
 
-    // 2.2 Jumbo Modak (Golden/Saffron Shimmering)
+    // 2.2 Jumbo Modak
     this.drawCanvasTexture(scene, 'jumbo_modak', 70, 74, (ctx) => {
       ctx.translate(35, 38);
       const glow = ctx.createRadialGradient(0, 0, 10, 0, 0, 34);
@@ -253,7 +252,7 @@ export class AssetGenerator {
       this.drawStar(ctx, 16, -10, 4, 4, 1.5);
     });
 
-    // 2.3 Durva Grass (Sacred green blades)
+    // 2.3 Durva Grass
     this.drawCanvasTexture(scene, 'durva', 56, 64, (ctx) => {
       ctx.translate(28, 42);
 
@@ -261,7 +260,6 @@ export class AssetGenerator {
       ctx.fillStyle = '#88D982';
       ctx.lineWidth = 2;
 
-      // Center blade
       ctx.beginPath();
       ctx.moveTo(0, 10);
       ctx.quadraticCurveTo(-2, -20, 0, -36);
@@ -269,7 +267,6 @@ export class AssetGenerator {
       ctx.fill();
       ctx.stroke();
 
-      // Left blade
       ctx.fillStyle = '#62B260';
       ctx.beginPath();
       ctx.moveTo(-2, 10);
@@ -278,7 +275,6 @@ export class AssetGenerator {
       ctx.fill();
       ctx.stroke();
 
-      // Far Left blade
       ctx.beginPath();
       ctx.moveTo(-3, 10);
       ctx.quadraticCurveTo(-24, -5, -22, -18);
@@ -286,7 +282,6 @@ export class AssetGenerator {
       ctx.fill();
       ctx.stroke();
 
-      // Right blade
       ctx.fillStyle = '#A3F69C';
       ctx.beginPath();
       ctx.moveTo(2, 10);
@@ -295,7 +290,6 @@ export class AssetGenerator {
       ctx.fill();
       ctx.stroke();
 
-      // Far Right blade
       ctx.beginPath();
       ctx.moveTo(3, 10);
       ctx.quadraticCurveTo(24, -5, 22, -20);
@@ -303,14 +297,13 @@ export class AssetGenerator {
       ctx.fill();
       ctx.stroke();
 
-      // Sacred Red Moli Thread Tie
       ctx.fillStyle = '#D32F2F';
       ctx.fillRect(-8, -2, 16, 8);
       ctx.fillStyle = '#FFC72C';
       ctx.fillRect(-8, 1, 16, 2);
     });
 
-    // 2.4 Shield Aura Visual (Active Durva Shield)
+    // 2.4 Shield Aura Visual
     this.drawCanvasTexture(scene, 'shield_aura', 120, 120, (ctx) => {
       ctx.translate(60, 60);
 
@@ -558,7 +551,7 @@ export class AssetGenerator {
       ctx.stroke();
     });
 
-    // 3.4 Decorative Pot (Terracotta Matka)
+    // 3.4 Decorative Pot
     this.drawCanvasTexture(scene, 'obstacle_pot', 60, 65, (ctx) => {
       ctx.translate(30, 36);
 
@@ -600,7 +593,7 @@ export class AssetGenerator {
       ctx.stroke();
     });
 
-    // 3.5 Hanging Decoration (Toran)
+    // 3.5 Hanging Toran
     this.drawCanvasTexture(scene, 'obstacle_hanging', 100, 70, (ctx) => {
       ctx.translate(50, 20);
 
@@ -721,7 +714,6 @@ export class AssetGenerator {
         ctx.ellipse(px + 75, 146, 24, 18, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Light strings
         ctx.strokeStyle = '#FFC72C';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
@@ -806,132 +798,51 @@ export class AssetGenerator {
   // 5. UI ASSETS & 3D PHYSICAL ARCADE BUTTONS
   // ==========================================
   private static createUITextures(scene: Phaser.Scene): void {
-    // 5.1 Primary 3D Saffron Button (PLAY / CLAIM)
-    this.drawCanvasTexture(scene, 'btn_primary_3d', 220, 58, (ctx) => {
-      // Bottom Bevel Depth
-      ctx.fillStyle = '#8B2500';
-      ctx.beginPath();
-      ctx.roundRect(4, 8, 212, 46, 12);
-      ctx.fill();
-
-      // Top Face Gradient
-      const faceGrad = ctx.createLinearGradient(0, 0, 0, 50);
-      faceGrad.addColorStop(0, '#FF7A00');
-      faceGrad.addColorStop(1, '#FF5100');
-      ctx.fillStyle = faceGrad;
-      ctx.beginPath();
-      ctx.roundRect(4, 2, 212, 46, 12);
-      ctx.fill();
-
-      // Specular Highlight
-      ctx.strokeStyle = '#FFE082';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-      ctx.fillRect(16, 4, 188, 2);
-    });
-
-    // 5.2 Secondary Dark Temple Button (HOW TO / RANKS / SETTINGS)
-    this.drawCanvasTexture(scene, 'btn_secondary_3d', 180, 50, (ctx) => {
-      ctx.fillStyle = '#120907';
-      ctx.beginPath();
-      ctx.roundRect(3, 6, 174, 40, 10);
-      ctx.fill();
-
-      const faceGrad = ctx.createLinearGradient(0, 0, 0, 44);
-      faceGrad.addColorStop(0, '#39251D');
-      faceGrad.addColorStop(1, '#23120B');
-      ctx.fillStyle = faceGrad;
-      ctx.beginPath();
-      ctx.roundRect(3, 2, 174, 40, 10);
-      ctx.fill();
-
-      ctx.strokeStyle = '#FFC72C';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    });
-
-    // 5.3 Tertiary Durva Green Button
-    this.drawCanvasTexture(scene, 'btn_tertiary_3d', 180, 50, (ctx) => {
-      ctx.fillStyle = '#1B4D20';
-      ctx.beginPath();
-      ctx.roundRect(3, 6, 174, 40, 10);
-      ctx.fill();
-
-      const faceGrad = ctx.createLinearGradient(0, 0, 0, 44);
-      faceGrad.addColorStop(0, '#4CAF50');
-      faceGrad.addColorStop(1, '#2E7D32');
-      ctx.fillStyle = faceGrad;
-      ctx.beginPath();
-      ctx.roundRect(3, 2, 174, 40, 10);
-      ctx.fill();
-
-      ctx.strokeStyle = '#88D982';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    });
-
-    // 5.4 Pause Button (Rounded Squircle)
-    this.drawCanvasTexture(scene, 'btn_pause_ui', 48, 48, (ctx) => {
-      ctx.fillStyle = '#1A0A05';
-      ctx.beginPath();
-      ctx.roundRect(2, 2, 44, 44, 12);
-      ctx.fill();
-      ctx.strokeStyle = '#FFC72C';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      ctx.fillStyle = '#FFC72C';
-      ctx.fillRect(15, 14, 5, 20);
-      ctx.fillRect(28, 14, 5, 20);
-    });
-
-    // 5.5 Combo Badges matching DESIGN.md Starburst & Capsule
-    this.drawCanvasTexture(scene, 'badge_combo_2', 88, 36, (ctx) => {
-      const grad = ctx.createLinearGradient(0, 0, 88, 36);
+    // 5.1 Combo Badges
+    this.drawCanvasTexture(scene, 'badge_combo_2', 96, 36, (ctx) => {
+      const grad = ctx.createLinearGradient(0, 0, 96, 36);
       grad.addColorStop(0, '#FF7A00');
       grad.addColorStop(1, '#FF5100');
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.roundRect(2, 2, 84, 32, 16);
+      ctx.roundRect(2, 2, 92, 32, 16);
       ctx.fill();
       ctx.strokeStyle = '#FFE082';
       ctx.lineWidth = 2;
       ctx.stroke();
 
       ctx.fillStyle = '#FFF8E7';
-      ctx.font = '900 16px "Epilogue", sans-serif';
+      ctx.font = '900 15px "Epilogue", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('x2 COMBO', 44, 23);
+      ctx.fillText('x2 COMBO', 48, 23);
     });
 
-    this.drawCanvasTexture(scene, 'badge_combo_3', 96, 36, (ctx) => {
-      const grad = ctx.createLinearGradient(0, 0, 96, 36);
+    this.drawCanvasTexture(scene, 'badge_combo_3', 104, 36, (ctx) => {
+      const grad = ctx.createLinearGradient(0, 0, 104, 36);
       grad.addColorStop(0, '#D32F2F');
       grad.addColorStop(1, '#FF5100');
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.roundRect(2, 2, 92, 32, 16);
+      ctx.roundRect(2, 2, 100, 32, 16);
       ctx.fill();
       ctx.strokeStyle = '#FFC72C';
       ctx.lineWidth = 2.5;
       ctx.stroke();
 
       ctx.fillStyle = '#FFE082';
-      ctx.font = '900 16px "Epilogue", sans-serif';
+      ctx.font = '900 15px "Epilogue", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('x3 COMBO! 🔥', 48, 23);
+      ctx.fillText('x3 COMBO', 52, 23);
     });
 
-    // 5.6 Mobile Touch D-Pad Buttons (Left, Right, Jump, Slide)
+    // 5.2 Mobile Touch D-Pad Buttons
     const drawMobilePad = (key: string, iconDraw: (ctx: CanvasRenderingContext2D) => void) => {
       this.drawCanvasTexture(scene, key, 60, 60, (ctx) => {
-        ctx.fillStyle = 'rgba(26, 10, 5, 0.85)';
+        ctx.fillStyle = 'rgba(26, 10, 5, 0.88)';
         ctx.beginPath();
         ctx.roundRect(3, 3, 54, 54, 16);
         ctx.fill();
-        ctx.strokeStyle = 'rgba(255, 199, 44, 0.5)';
+        ctx.strokeStyle = 'rgba(255, 199, 44, 0.6)';
         ctx.lineWidth = 2;
         ctx.stroke();
 
@@ -979,7 +890,192 @@ export class AssetGenerator {
   }
 
   // ==========================================
-  // 6. VFX PARTICLES
+  // 6. DEDICATED VECTOR ICONS (NO EMOJIS)
+  // ==========================================
+  private static createVectorIcons(scene: Phaser.Scene): void {
+    // 6.1 Trophy Icon
+    this.drawCanvasTexture(scene, 'icon_trophy', 32, 32, (ctx) => {
+      ctx.translate(16, 16);
+      ctx.fillStyle = '#FFC72C';
+      ctx.beginPath();
+      ctx.arc(0, -3, 8, 0, Math.PI);
+      ctx.fill();
+      ctx.fillRect(-5, -3, 10, 8);
+      ctx.fillRect(-2, 5, 4, 6);
+      ctx.fillRect(-7, 10, 14, 3);
+
+      // Handles
+      ctx.strokeStyle = '#FFC72C';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(-8, -2, 4, -Math.PI / 2, Math.PI / 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(8, -2, 4, -Math.PI / 2, Math.PI / 2, true);
+      ctx.stroke();
+    });
+
+    // 6.2 Book / How-To Icon
+    this.drawCanvasTexture(scene, 'icon_book', 32, 32, (ctx) => {
+      ctx.translate(16, 16);
+      ctx.strokeStyle = '#FFC72C';
+      ctx.lineWidth = 2;
+      ctx.fillStyle = '#FFC72C';
+
+      ctx.beginPath();
+      ctx.moveTo(0, -8);
+      ctx.lineTo(0, 10);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(0, -8);
+      ctx.quadraticCurveTo(-7, -11, -12, -9);
+      ctx.lineTo(-12, 8);
+      ctx.quadraticCurveTo(-7, 6, 0, 10);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(0, -8);
+      ctx.quadraticCurveTo(7, -11, 12, -9);
+      ctx.lineTo(12, 8);
+      ctx.quadraticCurveTo(7, 6, 0, 10);
+      ctx.stroke();
+    });
+
+    // 6.3 Settings / Gear Icon
+    this.drawCanvasTexture(scene, 'icon_settings', 32, 32, (ctx) => {
+      ctx.translate(16, 16);
+      ctx.fillStyle = '#FFC72C';
+      ctx.beginPath();
+      ctx.arc(0, 0, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#FFC72C';
+      ctx.lineWidth = 3;
+      for (let a = 0; a < 6; a++) {
+        const ang = (a * Math.PI) / 3;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(ang) * 6, Math.sin(ang) * 6);
+        ctx.lineTo(Math.cos(ang) * 11, Math.sin(ang) * 11);
+        ctx.stroke();
+      }
+    });
+
+    // 6.4 Fullscreen Icon
+    this.drawCanvasTexture(scene, 'icon_fullscreen', 32, 32, (ctx) => {
+      ctx.translate(16, 16);
+      ctx.strokeStyle = '#FFC72C';
+      ctx.lineWidth = 2.5;
+
+      // Top Left
+      ctx.beginPath();
+      ctx.moveTo(-11, -5);
+      ctx.lineTo(-11, -11);
+      ctx.lineTo(-5, -11);
+      ctx.stroke();
+
+      // Top Right
+      ctx.beginPath();
+      ctx.moveTo(5, -11);
+      ctx.lineTo(11, -11);
+      ctx.lineTo(11, -5);
+      ctx.stroke();
+
+      // Bottom Left
+      ctx.beginPath();
+      ctx.moveTo(-11, 5);
+      ctx.lineTo(-11, 11);
+      ctx.lineTo(-5, 11);
+      ctx.stroke();
+
+      // Bottom Right
+      ctx.beginPath();
+      ctx.moveTo(5, 11);
+      ctx.lineTo(11, 11);
+      ctx.lineTo(11, 5);
+      ctx.stroke();
+    });
+
+    // 6.5 Close / Cross Icon
+    this.drawCanvasTexture(scene, 'icon_close', 32, 32, (ctx) => {
+      ctx.translate(16, 16);
+      ctx.strokeStyle = '#FEDBCF';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(-8, -8);
+      ctx.lineTo(8, 8);
+      ctx.moveTo(8, -8);
+      ctx.lineTo(-8, 8);
+      ctx.stroke();
+    });
+
+    // 6.6 Play Triangle Icon
+    this.drawCanvasTexture(scene, 'icon_play_triangle', 24, 24, (ctx) => {
+      ctx.translate(12, 12);
+      ctx.fillStyle = '#FFF8E7';
+      ctx.beginPath();
+      ctx.moveTo(-5, -8);
+      ctx.lineTo(8, 0);
+      ctx.lineTo(-5, 8);
+      ctx.closePath();
+      ctx.fill();
+    });
+
+    // 6.7 Replay / Restart Icon
+    this.drawCanvasTexture(scene, 'icon_replay', 28, 28, (ctx) => {
+      ctx.translate(14, 14);
+      ctx.strokeStyle = '#FFF8E7';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(0, 0, 8, -Math.PI * 0.7, Math.PI * 0.7);
+      ctx.stroke();
+
+      ctx.fillStyle = '#FFF8E7';
+      ctx.beginPath();
+      ctx.moveTo(-7, -8);
+      ctx.lineTo(-2, -8);
+      ctx.lineTo(-4.5, -3);
+      ctx.closePath();
+      ctx.fill();
+    });
+
+    // 6.8 Home Icon
+    this.drawCanvasTexture(scene, 'icon_home', 28, 28, (ctx) => {
+      ctx.translate(14, 14);
+      ctx.fillStyle = '#FEDBCF';
+      ctx.beginPath();
+      ctx.moveTo(0, -9);
+      ctx.lineTo(10, -1);
+      ctx.lineTo(7, -1);
+      ctx.lineTo(7, 9);
+      ctx.lineTo(-7, 9);
+      ctx.lineTo(-7, -1);
+      ctx.lineTo(-10, -1);
+      ctx.closePath();
+      ctx.fill();
+    });
+
+    // 6.9 Map Pin / Distance Icon
+    this.drawCanvasTexture(scene, 'icon_pin', 24, 24, (ctx) => {
+      ctx.translate(12, 12);
+      ctx.fillStyle = '#FF7A00';
+      ctx.beginPath();
+      ctx.arc(0, -3, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(-5, -2);
+      ctx.lineTo(0, 8);
+      ctx.lineTo(5, -2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#1A0A05';
+      ctx.beginPath();
+      ctx.arc(0, -3, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  // ==========================================
+  // 7. VFX PARTICLES
   // ==========================================
   private static createVFXTextures(scene: Phaser.Scene): void {
     this.drawCanvasTexture(scene, 'particle_gold', 24, 24, (ctx) => {

@@ -46,6 +46,9 @@ export class GameScene extends Phaser.Scene {
 
   public create(): void {
     const { width, height } = this.scale;
+    const groundY = GAME_CONFIG.getGroundY(height);
+    const lanes = GAME_CONFIG.getLaneXPositions(width);
+
     this.isGameOver = false;
     this.isPaused = false;
     this.shieldRemainingMs = 0;
@@ -53,33 +56,33 @@ export class GameScene extends Phaser.Scene {
     // 1. Initialize Systems
     this.scoreSystem = new ScoreSystem();
     this.difficultySystem = new DifficultySystem((tier) => {
-      this.hud.showFloatingFeedback(width / 2, height * 0.35, `⚡ ${tier} MODE!`, '#FF7A00');
+      this.hud.showFloatingFeedback(width / 2, height * 0.35, `${tier} MODE!`, '#FF7A00');
     });
     this.comboSystem = new ComboSystem((mult) => {
       this.hud.updateCombo(mult);
       if (mult > 1) {
-        this.hud.showFloatingFeedback(this.mushak.x, this.mushak.y - 40, `x${mult} COMBO! 🔥`, '#FFC72C');
+        this.hud.showFloatingFeedback(this.mushak.x, this.mushak.y - 40, `x${mult} COMBO!`, '#FFC72C');
       }
     });
 
-    // 2. Parallax Environment (Matching UI Design System)
+    // 2. Parallax Environment (Edge-to-Edge)
     if (this.textures.exists('ui_festive_street_bg')) {
       this.bgSky = this.add.tileSprite(0, 0, width, height, 'ui_festive_street_bg').setOrigin(0, 0).setScrollFactor(0);
-      this.add.rectangle(width / 2, height / 2, width, height, 0x120907, 0.35).setScrollFactor(0);
+      this.add.rectangle(width / 2, height / 2, width, height, 0x120907, 0.30).setScrollFactor(0);
     } else {
       this.bgSky = this.add.tileSprite(0, 0, width, height, 'bg_sky').setOrigin(0, 0).setScrollFactor(0);
     }
 
-    this.bgPandals = this.add.tileSprite(0, height - 380, width, 300, 'bg_pandals').setOrigin(0, 0).setScrollFactor(0);
-    this.groundStreet = this.add.tileSprite(0, GAME_CONFIG.GROUND_Y - 20, width, 140, 'ground_street').setOrigin(0, 0).setScrollFactor(0);
+    this.bgPandals = this.add.tileSprite(0, groundY - 260, width, 300, 'bg_pandals').setOrigin(0, 0).setScrollFactor(0);
+    this.groundStreet = this.add.tileSprite(0, groundY - 20, width, 140, 'ground_street').setOrigin(0, 0).setScrollFactor(0);
     this.groundStreet.setDepth(10);
 
     // Invisible Ground Collider
-    this.groundCollider = this.add.rectangle(width / 2, GAME_CONFIG.GROUND_Y + 10, width * 2, 20, 0x000000, 0);
+    this.groundCollider = this.add.rectangle(width / 2, groundY + 10, width * 2, 20, 0x000000, 0);
     this.physics.add.existing(this.groundCollider, true);
 
     // 3. Mushak Player
-    this.mushak = new Mushak(this, GAME_CONFIG.LANE_X_POSITIONS[1], GAME_CONFIG.GROUND_Y - 10);
+    this.mushak = new Mushak(this, lanes[1], groundY - 10);
     this.mushak.setDepth(20);
     this.physics.add.collider(this.mushak, this.groundCollider);
 
@@ -95,7 +98,6 @@ export class GameScene extends Phaser.Scene {
       onPause: () => this.togglePause()
     });
 
-    // Listen to mobile touch events from HUD
     this.events.on('input-move-left', () => this.mushak.moveLeft());
     this.events.on('input-move-right', () => this.mushak.moveRight());
     this.events.on('input-jump', () => this.mushak.jump());
@@ -111,6 +113,28 @@ export class GameScene extends Phaser.Scene {
 
     // Start Festival BGM
     AudioSystem.getInstance().startBGM();
+
+    this.scale.on('resize', this.handleResize, this);
+  }
+
+  private handleResize(gameSize: Phaser.Structs.Size): void {
+    const width = gameSize.width;
+    const height = gameSize.height;
+    const groundY = GAME_CONFIG.getGroundY(height);
+
+    if (this.bgSky) this.bgSky.setSize(width, height);
+    if (this.bgPandals) {
+      this.bgPandals.setSize(width, 300);
+      this.bgPandals.y = groundY - 260;
+    }
+    if (this.groundStreet) {
+      this.groundStreet.setSize(width, 140);
+      this.groundStreet.y = groundY - 20;
+    }
+    if (this.groundCollider) {
+      this.groundCollider.setPosition(width / 2, groundY + 10);
+      this.groundCollider.setSize(width * 2, 20);
+    }
   }
 
   private initObjectPools(): void {
@@ -130,7 +154,6 @@ export class GameScene extends Phaser.Scene {
       const o = new Obstacle(this, -100, -100, type);
       o.deactivate();
       o.setDepth(18);
-      this.obstaclesPool.push(o);
       this.physics.add.overlap(this.mushak, o, () => this.handleObstacleOverlap(o));
     }
   }
@@ -193,9 +216,8 @@ export class GameScene extends Phaser.Scene {
   // SPAWNING PATTERNS
   // ==========================================
   private spawnCollectiblePattern(): void {
-    const lanes = [0, 1, 2];
-    const targetLane = Phaser.Utils.Array.GetRandom(lanes);
     const spawnX = this.scale.width + 80;
+    const groundY = GAME_CONFIG.getGroundY(this.scale.height);
 
     const roll = Math.random();
     let type: CollectibleType = 'MODAK';
@@ -206,7 +228,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     const isAirborne = Math.random() < 0.25;
-    const spawnY = isAirborne ? GAME_CONFIG.GROUND_Y - 100 : GAME_CONFIG.GROUND_Y - 25;
+    const spawnY = isAirborne ? groundY - 100 : groundY - 25;
 
     this.spawnSingleCollectible(spawnX, spawnY, type);
 
@@ -225,14 +247,15 @@ export class GameScene extends Phaser.Scene {
 
   private spawnObstaclePattern(): void {
     const spawnX = this.scale.width + 100;
+    const groundY = GAME_CONFIG.getGroundY(this.scale.height);
     const tier = this.difficultySystem.getDifficulty();
 
     const obsTypes: ObstacleType[] = ['FLOWER_CART', 'CRATES', 'BARRIER', 'POT', 'HANGING'];
     const chosenType = Phaser.Utils.Array.GetRandom(obsTypes);
 
-    let spawnY = GAME_CONFIG.GROUND_Y - 10;
+    let spawnY = groundY - 10;
     if (chosenType === 'HANGING') {
-      spawnY = GAME_CONFIG.GROUND_Y - 110;
+      spawnY = groundY - 110;
     }
 
     const obstacle = this.obstaclesPool.find((o) => !o.active);
@@ -242,7 +265,7 @@ export class GameScene extends Phaser.Scene {
 
     if (tier === 'HARD' && Math.random() < 0.45) {
       const secondType = chosenType === 'HANGING' ? 'POT' : 'HANGING';
-      const secondY = secondType === 'HANGING' ? GAME_CONFIG.GROUND_Y - 110 : GAME_CONFIG.GROUND_Y - 10;
+      const secondY = secondType === 'HANGING' ? groundY - 110 : groundY - 10;
       const secondObs = this.obstaclesPool.find((o) => !o.active && o !== obstacle);
       if (secondObs) {
         this.time.delayedCall(450, () => {
@@ -270,13 +293,13 @@ export class GameScene extends Phaser.Scene {
       const mult = this.comboSystem.registerModakCollect();
       const pts = this.scoreSystem.addRegularModak(mult);
       AudioSystem.getInstance().playModakCollect();
-      this.hud.showFloatingFeedback(x, y, `+${pts} Regular`, '#FFC72C');
+      this.hud.showFloatingFeedback(x, y, `+${pts}`, '#FFC72C');
       this.emitParticleBurst(x, y, 'particle_gold', 8);
     } else if (type === 'JUMBO_MODAK') {
       const mult = this.comboSystem.registerModakCollect();
       const pts = this.scoreSystem.addJumboModak(mult);
       AudioSystem.getInstance().playJumboModakCollect();
-      this.hud.showFloatingFeedback(x, y, `+${pts} Jumbo Modak!`, '#FF7A00');
+      this.hud.showFloatingFeedback(x, y, `+${pts} JUMBO!`, '#FF7A00');
       this.emitParticleBurst(x, y, 'particle_gold', 16);
     } else if (type === 'DURVA') {
       this.scoreSystem.addDurva();
@@ -293,7 +316,7 @@ export class GameScene extends Phaser.Scene {
 
     if (obstacle.getType() === 'HANGING') {
       if (this.mushak.getMushakState() === 'SLIDE') {
-        return; // Ducked under!
+        return;
       }
     }
 
@@ -358,5 +381,9 @@ export class GameScene extends Phaser.Scene {
       this.scene.pause();
       this.scene.launch('PauseScene');
     }
+  }
+
+  public shutdown(): void {
+    this.scale.off('resize', this.handleResize, this);
   }
 }

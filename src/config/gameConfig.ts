@@ -4,39 +4,46 @@ export const GAME_HEIGHT = 540;
 export const GAME_CONFIG = {
   // Movement & Physics
   GRAVITY: 1400,
-  JUMP_FORCE: -620,
-  SLIDE_DURATION: 450, // ms matching UI spec (380ms bbox + 70ms ease)
-  LANE_X_POSITIONS: [280, 480, 680], // 3 Lanes: Left, Center, Right
-  BASE_RUN_SPEED: 380, // pixels per second
-  MAX_RUN_SPEED: 720,
-  ACCELERATION_RATE: 3.5, // speed increment per second
-
-  // Ground positioning
-  GROUND_Y: 450,
-  PLAYER_START_X: 180,
+  JUMP_FORCE: -640,
+  SLIDE_DURATION: 450, // ms
+  BASE_RUN_SPEED: 400, // pixels per second
+  MAX_RUN_SPEED: 750,
+  ACCELERATION_RATE: 3.5,
 
   // Collectible Scoring
   MODAK_SCORE: 10,
   JUMBO_MODAK_SCORE: 50,
   DISTANCE_SCORE_RATE: 1,
 
-  // Combos & Power-ups (matching UI Matrix Specs)
+  // Combos & Power-ups
   COMBO_WINDOW_MS: 2000,
-  COMBO_TIER_1_COUNT: 3, // x2 multiplier
-  COMBO_TIER_2_COUNT: 6, // x3 multiplier
-  SHIELD_DURATION_MS: 5000, // 5000ms duration with blink
+  COMBO_TIER_1_COUNT: 3, // x2
+  COMBO_TIER_2_COUNT: 6, // x3
+  SHIELD_DURATION_MS: 5000,
 
-  // Difficulty intervals (in seconds)
+  // Difficulty intervals
   DIFFICULTY_TIERS: {
     EASY_END: 30,
     MEDIUM_END: 60
   },
 
-  // Obstacle Spawning
-  OBSTACLE_MIN_GAP: 320,
-  OBSTACLE_MAX_GAP: 580,
+  // Dynamic Responsive Helpers
+  getGroundY: (screenHeight: number) => {
+    return screenHeight - 90;
+  },
 
-  // Official Master Theme Colors from UI and UX / DESIGN.md
+  getLaneXPositions: (screenWidth: number) => {
+    const isMobile = screenWidth < 600;
+    if (isMobile) {
+      return [screenWidth * 0.22, screenWidth * 0.50, screenWidth * 0.78];
+    }
+    // Desktop / widescreen
+    const center = screenWidth / 2;
+    const laneOffset = Math.min(220, screenWidth * 0.18);
+    return [center - laneOffset, center, center + laneOffset];
+  },
+
+  // Official Master Theme Colors from UI and UX DESIGN.md
   COLORS: {
     SURFACE: '#200F08',
     SURFACE_CONTAINER_LOWEST: '#1A0A05',
@@ -57,7 +64,7 @@ export const GAME_CONFIG = {
     TEXT_IVORY: '#FFF8E7',
     GOLD_GLOW: '#FFE082',
     BTN_BEVEL_PRIMARY: '#8B2500',
-    BTN_BEVEL_SECONDARY: '#5D3A1A',
+    BTN_BEVEL_SECONDARY: '#120907',
     BTN_BEVEL_TERTIARY: '#1B4D20'
   }
 };

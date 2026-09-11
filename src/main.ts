@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from './config/gameConfig';
 import { BootScene } from './game/scenes/BootScene';
 import { PreloadScene } from './game/scenes/PreloadScene';
 import { MainMenuScene } from './game/scenes/MainMenuScene';
@@ -12,13 +11,15 @@ import { LeaderboardScene } from './game/scenes/LeaderboardScene';
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'game-container',
-  width: GAME_WIDTH,
-  height: GAME_HEIGHT,
+  width: window.innerWidth,
+  height: window.innerHeight,
   scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: '100%',
+    height: '100%'
   },
-  backgroundColor: '#120906',
+  backgroundColor: '#120907',
   physics: {
     default: 'arcade',
     arcade: {
@@ -38,6 +39,16 @@ const config: Phaser.Types.Core.GameConfig = {
   ]
 };
 
-window.addEventListener('DOMContentLoaded', () => {
+async function initApp() {
+  // Ensure Epilogue & Plus Jakarta Sans Google Fonts are loaded prior to game render
+  if (document.fonts) {
+    try {
+      await document.fonts.ready;
+    } catch {
+      // fallback
+    }
+  }
   new Phaser.Game(config);
-});
+}
+
+window.addEventListener('DOMContentLoaded', initApp);

@@ -1,0 +1,21 @@
+{
+  "name": "mushaks-modak-dash",
+  "version": "1.0.0",
+  "description": "Mushak's Modak Dash - Ganesh Chaturthi Endless Runner Game by Team BAPPA BYTES",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "server": "node server/server.js",
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "phaser": "^3.87.0",
+    "express": "^4.21.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0"
+  }
+}

@@ -17,6 +17,7 @@ export class BootScene extends Phaser.Scene {
   public create(): void {
     // Generate all vector textures into TextureManager
     AssetGenerator.generateAllTextures(this);
+    AssetGenerator.createCleanMascotTexture(this);
 
     // Proceed to Preload Scene
     this.scene.start('PreloadScene');

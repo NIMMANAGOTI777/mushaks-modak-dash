@@ -893,56 +893,538 @@ export class AssetGenerator {
   // 6. DEDICATED VECTOR ICONS (NO EMOJIS)
   // ==========================================
   private static createVectorIcons(scene: Phaser.Scene): void {
-    // 6.1 Trophy Icon
-    this.drawCanvasTexture(scene, 'icon_trophy', 32, 32, (ctx) => {
-      ctx.translate(16, 16);
-      ctx.fillStyle = '#FFC72C';
+    // 6.1 Premium 3D Golden Trophy Icon
+    this.drawCanvasTexture(scene, 'icon_trophy', 64, 64, (ctx) => {
+      ctx.translate(32, 32);
+      
+      // Outer subtle glow
+      const glow = ctx.createRadialGradient(0, 0, 8, 0, 0, 26);
+      glow.addColorStop(0, 'rgba(251, 191, 36, 0.4)');
+      glow.addColorStop(1, 'rgba(251, 191, 36, 0)');
+      ctx.fillStyle = glow;
       ctx.beginPath();
-      ctx.arc(0, -3, 8, 0, Math.PI);
+      ctx.arc(0, 0, 26, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillRect(-5, -3, 10, 8);
-      ctx.fillRect(-2, 5, 4, 6);
-      ctx.fillRect(-7, 10, 14, 3);
+
+      // Cup Body
+      const cupGrad = ctx.createLinearGradient(-16, -18, 16, 10);
+      cupGrad.addColorStop(0, '#FFE082');
+      cupGrad.addColorStop(0.3, '#FFC72C');
+      cupGrad.addColorStop(0.7, '#D97706');
+      cupGrad.addColorStop(1, '#92400E');
+      ctx.fillStyle = cupGrad;
+
+      // Cup shape
+      ctx.beginPath();
+      ctx.moveTo(-16, -16);
+      ctx.lineTo(16, -16);
+      ctx.lineTo(13, 2);
+      ctx.quadraticCurveTo(10, 14, 0, 14);
+      ctx.quadraticCurveTo(-10, 14, -13, 2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#FEF08A';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Rim top
+      ctx.fillStyle = '#FEF08A';
+      ctx.beginPath();
+      ctx.ellipse(0, -16, 16, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
 
       // Handles
       ctx.strokeStyle = '#FFC72C';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.arc(-8, -2, 4, -Math.PI / 2, Math.PI / 2);
+      ctx.arc(-16, -6, 8, -Math.PI / 2, Math.PI / 2);
       ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(8, -2, 4, -Math.PI / 2, Math.PI / 2, true);
+      ctx.strokeStyle = '#FEF08A';
+      ctx.lineWidth = 1;
       ctx.stroke();
-    });
 
-    // 6.2 Book / How-To Icon
-    this.drawCanvasTexture(scene, 'icon_book', 32, 32, (ctx) => {
-      ctx.translate(16, 16);
       ctx.strokeStyle = '#FFC72C';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(16, -6, 8, -Math.PI / 2, Math.PI / 2, true);
+      ctx.stroke();
+      ctx.strokeStyle = '#FEF08A';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Stem
+      ctx.fillStyle = '#D97706';
+      ctx.fillRect(-4, 14, 8, 8);
       ctx.fillStyle = '#FFC72C';
+      ctx.fillRect(-2, 14, 4, 8);
 
+      // Base
+      ctx.fillStyle = cupGrad;
       ctx.beginPath();
-      ctx.moveTo(0, -8);
-      ctx.lineTo(0, 10);
+      ctx.roundRect(-14, 21, 28, 7, 3);
+      ctx.fill();
+      ctx.strokeStyle = '#FEF08A';
+      ctx.lineWidth = 1;
       ctx.stroke();
 
+      // Star emblem on cup
+      ctx.fillStyle = '#FFF8E7';
+      this.drawStar(ctx, 0, -3, 4, 4, 1.8);
+    });
+
+    // 6.2 Book / How-To Icon (Open Book)
+    this.drawCanvasTexture(scene, 'icon_book', 48, 48, (ctx) => {
+      ctx.translate(24, 24);
+      ctx.strokeStyle = '#FFE082';
+      ctx.fillStyle = '#FFF8E7';
+      ctx.lineWidth = 2.2;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      // Left page
       ctx.beginPath();
-      ctx.moveTo(0, -8);
-      ctx.quadraticCurveTo(-7, -11, -12, -9);
-      ctx.lineTo(-12, 8);
-      ctx.quadraticCurveTo(-7, 6, 0, 10);
+      ctx.moveTo(0, -10);
+      ctx.quadraticCurveTo(-8, -14, -16, -11);
+      ctx.lineTo(-16, 8);
+      ctx.quadraticCurveTo(-8, 5, 0, 9);
+      ctx.closePath();
+      ctx.fillStyle = '#2A140A';
+      ctx.fill();
       ctx.stroke();
 
+      // Right page
       ctx.beginPath();
-      ctx.moveTo(0, -8);
-      ctx.quadraticCurveTo(7, -11, 12, -9);
-      ctx.lineTo(12, 8);
-      ctx.quadraticCurveTo(7, 6, 0, 10);
+      ctx.moveTo(0, -10);
+      ctx.quadraticCurveTo(8, -14, 16, -11);
+      ctx.lineTo(16, 8);
+      ctx.quadraticCurveTo(8, 5, 0, 9);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Center spine
+      ctx.beginPath();
+      ctx.moveTo(0, -10);
+      ctx.lineTo(0, 9);
+      ctx.stroke();
+
+      // Page lines
+      ctx.strokeStyle = '#FFC72C';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(-12, -4);
+      ctx.lineTo(-4, -5);
+      ctx.moveTo(-12, 1);
+      ctx.lineTo(-4, 0);
+      ctx.moveTo(4, -5);
+      ctx.lineTo(12, -4);
+      ctx.moveTo(4, 0);
+      ctx.lineTo(12, 1);
       ctx.stroke();
     });
 
-    // 6.3 Settings / Gear Icon
+    // 6.3 Ranks / Podium Icon
+    this.drawCanvasTexture(scene, 'icon_ranks', 48, 48, (ctx) => {
+      ctx.translate(24, 24);
+
+      // 3 Podium steps
+      ctx.fillStyle = '#D97706';
+      // Center (1st)
+      ctx.beginPath();
+      ctx.roundRect(-7, -4, 14, 18, 2);
+      ctx.fill();
+      ctx.strokeStyle = '#FFE082';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Left (2nd)
+      ctx.fillStyle = '#92400E';
+      ctx.beginPath();
+      ctx.roundRect(-19, 2, 12, 12, 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Right (3rd)
+      ctx.fillStyle = '#78350F';
+      ctx.beginPath();
+      ctx.roundRect(7, 6, 12, 8, 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Crown / Star on center
+      ctx.fillStyle = '#FFC72C';
+      ctx.beginPath();
+      ctx.moveTo(-6, -8);
+      ctx.lineTo(-3, -5);
+      ctx.lineTo(0, -11);
+      ctx.lineTo(3, -5);
+      ctx.lineTo(6, -8);
+      ctx.lineTo(5, -4);
+      ctx.lineTo(-5, -4);
+      ctx.closePath();
+      ctx.fill();
+
+      // Numbers
+      ctx.fillStyle = '#FFE082';
+      ctx.font = 'bold 9px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('1', 0, 8);
+      ctx.font = 'bold 7px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('2', -13, 11);
+      ctx.fillText('3', 13, 13);
+    });
+
+    // 6.4 Speaker Audio Icon
+    this.drawCanvasTexture(scene, 'icon_audio_on', 48, 48, (ctx) => {
+      ctx.translate(24, 24);
+      ctx.fillStyle = '#FFE082';
+      ctx.strokeStyle = '#FFE082';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      // Speaker body
+      ctx.beginPath();
+      ctx.moveTo(-10, -4);
+      ctx.lineTo(-5, -4);
+      ctx.lineTo(0, -9);
+      ctx.lineTo(0, 9);
+      ctx.lineTo(-5, 4);
+      ctx.lineTo(-10, 4);
+      ctx.closePath();
+      ctx.fill();
+
+      // Sound waves
+      ctx.beginPath();
+      ctx.arc(0, 0, 6, -Math.PI / 3, Math.PI / 3);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, 11, -Math.PI / 3, Math.PI / 3);
+      ctx.stroke();
+    });
+
+    this.drawCanvasTexture(scene, 'icon_audio_off', 48, 48, (ctx) => {
+      ctx.translate(24, 24);
+      ctx.fillStyle = '#E0C0AF';
+      ctx.strokeStyle = '#E0C0AF';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      // Speaker body
+      ctx.beginPath();
+      ctx.moveTo(-10, -4);
+      ctx.lineTo(-5, -4);
+      ctx.lineTo(0, -9);
+      ctx.lineTo(0, 9);
+      ctx.lineTo(-5, 4);
+      ctx.lineTo(-10, 4);
+      ctx.closePath();
+      ctx.fill();
+
+      // Red slash
+      ctx.strokeStyle = '#EF4444';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(-10, -9);
+      ctx.lineTo(10, 9);
+      ctx.stroke();
+    });
+
+    // 6.5 Golden Sunburst / Mascot Halo (180 x 180)
+    this.drawCanvasTexture(scene, 'halo_sunburst', 180, 180, (ctx) => {
+      ctx.translate(90, 90);
+
+      // Deep radial golden aura
+      const radGrad = ctx.createRadialGradient(0, 0, 20, 0, 0, 85);
+      radGrad.addColorStop(0, 'rgba(255, 215, 0, 0.6)');
+      radGrad.addColorStop(0.5, 'rgba(251, 146, 60, 0.35)');
+      radGrad.addColorStop(0.8, 'rgba(217, 119, 6, 0.15)');
+      radGrad.addColorStop(1, 'rgba(217, 119, 6, 0)');
+      ctx.fillStyle = radGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, 85, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Fine golden sun rays
+      ctx.strokeStyle = 'rgba(254, 240, 138, 0.45)';
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < 24; i++) {
+        const ang = (i * Math.PI) / 12;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(ang) * 48, Math.sin(ang) * 48);
+        ctx.lineTo(Math.cos(ang) * 76, Math.sin(ang) * 76);
+        ctx.stroke();
+      }
+
+      // Golden ring circle
+      ctx.strokeStyle = '#FBBF24';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, 52, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Inner disc
+      const innerGrad = ctx.createRadialGradient(0, 0, 5, 0, 0, 50);
+      innerGrad.addColorStop(0, 'rgba(255, 237, 213, 0.25)');
+      innerGrad.addColorStop(1, 'rgba(251, 146, 60, 0.05)');
+      ctx.fillStyle = innerGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, 50, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // 6.6 Ornate Top Score Panel Background (320 x 84)
+    this.drawCanvasTexture(scene, 'ornate_score_panel', 320, 84, (ctx) => {
+      // Main dark chocolate panel with slight gradient
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, 84);
+      bgGrad.addColorStop(0, '#221008');
+      bgGrad.addColorStop(0.5, '#1B0D05');
+      bgGrad.addColorStop(1, '#150803');
+      ctx.fillStyle = bgGrad;
+      ctx.beginPath();
+      ctx.roundRect(4, 4, 312, 76, 20);
+      ctx.fill();
+
+      // Outer Gold Border
+      ctx.strokeStyle = '#D97706';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Inner Fine Golden Highlight Border
+      ctx.strokeStyle = '#FDE68A';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(6, 6, 308, 72, 18);
+      ctx.stroke();
+
+      // Gold Corner Filigree Ornaments
+      const drawCornerFiligree = (cx: number, cy: number, flipX: number, flipY: number) => {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(flipX, flipY);
+        ctx.strokeStyle = '#FBBF24';
+        ctx.fillStyle = '#FBBF24';
+        ctx.lineWidth = 1.5;
+
+        // Leaf / scroll curve
+        ctx.beginPath();
+        ctx.moveTo(0, 12);
+        ctx.quadraticCurveTo(4, 4, 12, 0);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(12, 0, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(0, 12, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      };
+
+      // 4 corners
+      drawCornerFiligree(14, 14, 1, 1);
+      drawCornerFiligree(306, 14, -1, 1);
+      drawCornerFiligree(14, 70, 1, -1);
+      drawCornerFiligree(306, 70, -1, -1);
+    });
+
+    // 6.7 Ornate Play CTA Button Background (380 x 86)
+    this.drawCanvasTexture(scene, 'ornate_play_btn', 380, 86, (ctx) => {
+      // Outer 3D Bevel/Drop Shadow
+      ctx.fillStyle = '#7C2D12';
+      ctx.beginPath();
+      ctx.roundRect(4, 8, 372, 74, 26);
+      ctx.fill();
+
+      // Radiant Saffron-to-Deep-Orange Face Gradient
+      const btnGrad = ctx.createLinearGradient(0, 4, 0, 78);
+      btnGrad.addColorStop(0, '#FFA834');
+      btnGrad.addColorStop(0.35, '#F97316');
+      btnGrad.addColorStop(0.8, '#EA580C');
+      btnGrad.addColorStop(1, '#C2410C');
+      ctx.fillStyle = btnGrad;
+      ctx.beginPath();
+      ctx.roundRect(4, 4, 372, 74, 26);
+      ctx.fill();
+
+      // Outer Gold Rim
+      ctx.strokeStyle = '#FDE68A';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Inner Highlight Stroke
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.roundRect(6, 6, 368, 34, [24, 24, 0, 0]);
+      ctx.stroke();
+
+      // Left & Right Gold Corner Filigree Insets
+      const drawBtnFiligree = (cx: number, cy: number, flipX: number) => {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(flipX, 1);
+        ctx.strokeStyle = '#FEF08A';
+        ctx.fillStyle = '#FEF08A';
+        ctx.lineWidth = 1.5;
+
+        ctx.beginPath();
+        ctx.moveTo(-6, -10);
+        ctx.quadraticCurveTo(2, -8, 6, 0);
+        ctx.quadraticCurveTo(2, 8, -6, 10);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(-6, -10, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(-6, 10, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      };
+
+      drawBtnFiligree(26, 41, 1);
+      drawBtnFiligree(354, 41, -1);
+    });
+
+    // 6.8 Ornate Secondary Button Background (144 x 48)
+    this.drawCanvasTexture(scene, 'ornate_sec_btn', 144, 48, (ctx) => {
+      // 3D Bevel
+      ctx.fillStyle = '#120907';
+      ctx.beginPath();
+      ctx.roundRect(2, 4, 140, 42, 16);
+      ctx.fill();
+
+      // Face
+      const faceGrad = ctx.createLinearGradient(0, 2, 0, 42);
+      faceGrad.addColorStop(0, '#2E1B14');
+      faceGrad.addColorStop(1, '#1F0F0A');
+      ctx.fillStyle = faceGrad;
+      ctx.beginPath();
+      ctx.roundRect(2, 2, 140, 42, 16);
+      ctx.fill();
+
+      // Gold Border
+      ctx.strokeStyle = '#FBBF24';
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+
+      // Inner subtle line
+      ctx.strokeStyle = 'rgba(254, 240, 138, 0.2)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(4, 4, 136, 38, 14);
+      ctx.stroke();
+    });
+
+    // 6.9 Decorative Green Leaves (Flanking "MUSHAK'S")
+    this.drawCanvasTexture(scene, 'deco_leaf_left', 36, 36, (ctx) => {
+      ctx.translate(18, 18);
+      ctx.fillStyle = '#22C55E';
+      ctx.strokeStyle = '#15803D';
+      ctx.lineWidth = 1.2;
+
+      // Leaf 1
+      ctx.beginPath();
+      ctx.moveTo(8, 6);
+      ctx.quadraticCurveTo(-2, 4, -14, -8);
+      ctx.quadraticCurveTo(-4, -12, 8, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      // Leaf 2
+      ctx.fillStyle = '#4ADE80';
+      ctx.beginPath();
+      ctx.moveTo(6, 8);
+      ctx.quadraticCurveTo(-8, 12, -12, 2);
+      ctx.quadraticCurveTo(-2, 0, 6, 8);
+      ctx.fill();
+      ctx.stroke();
+    });
+
+    this.drawCanvasTexture(scene, 'deco_leaf_right', 36, 36, (ctx) => {
+      ctx.translate(18, 18);
+      ctx.fillStyle = '#22C55E';
+      ctx.strokeStyle = '#15803D';
+      ctx.lineWidth = 1.2;
+
+      // Leaf 1
+      ctx.beginPath();
+      ctx.moveTo(-8, 6);
+      ctx.quadraticCurveTo(2, 4, 14, -8);
+      ctx.quadraticCurveTo(4, -12, -8, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      // Leaf 2
+      ctx.fillStyle = '#4ADE80';
+      ctx.beginPath();
+      ctx.moveTo(-6, 8);
+      ctx.quadraticCurveTo(8, 12, 12, 2);
+      ctx.quadraticCurveTo(2, 0, -6, 8);
+      ctx.fill();
+      ctx.stroke();
+    });
+
+    // 6.10 Decorative Golden Swirl Brackets (Flanking "MODAK DASH")
+    this.drawCanvasTexture(scene, 'deco_swirl_left', 42, 42, (ctx) => {
+      ctx.translate(21, 21);
+      ctx.strokeStyle = '#FBBF24';
+      ctx.fillStyle = '#FDE68A';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(14, -8);
+      ctx.quadraticCurveTo(-8, -12, -10, 0);
+      ctx.quadraticCurveTo(-12, 12, 6, 12);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(6, 12, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    this.drawCanvasTexture(scene, 'deco_swirl_right', 42, 42, (ctx) => {
+      ctx.translate(21, 21);
+      ctx.strokeStyle = '#FBBF24';
+      ctx.fillStyle = '#FDE68A';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(-14, -8);
+      ctx.quadraticCurveTo(8, -12, 10, 0);
+      ctx.quadraticCurveTo(12, 12, -6, 12);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(-6, 12, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // 6.11 Golden Footer Divider Line (360 x 8)
+    this.drawCanvasTexture(scene, 'footer_divider', 360, 8, (ctx) => {
+      const grad = ctx.createLinearGradient(0, 4, 360, 4);
+      grad.addColorStop(0, 'rgba(251, 191, 36, 0)');
+      grad.addColorStop(0.3, 'rgba(251, 191, 36, 0.7)');
+      grad.addColorStop(0.5, '#FDE68A');
+      grad.addColorStop(0.7, 'rgba(251, 191, 36, 0.7)');
+      grad.addColorStop(1, 'rgba(251, 191, 36, 0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, 4);
+      ctx.lineTo(360, 4);
+      ctx.stroke();
+    });
+
+    // 6.12 Settings / Close / Fullscreen general icons
     this.drawCanvasTexture(scene, 'icon_settings', 32, 32, (ctx) => {
       ctx.translate(16, 16);
       ctx.fillStyle = '#FFC72C';
@@ -960,34 +1442,29 @@ export class AssetGenerator {
       }
     });
 
-    // 6.4 Fullscreen Icon
     this.drawCanvasTexture(scene, 'icon_fullscreen', 32, 32, (ctx) => {
       ctx.translate(16, 16);
       ctx.strokeStyle = '#FFC72C';
       ctx.lineWidth = 2.5;
 
-      // Top Left
       ctx.beginPath();
       ctx.moveTo(-11, -5);
       ctx.lineTo(-11, -11);
       ctx.lineTo(-5, -11);
       ctx.stroke();
 
-      // Top Right
       ctx.beginPath();
       ctx.moveTo(5, -11);
       ctx.lineTo(11, -11);
       ctx.lineTo(11, -5);
       ctx.stroke();
 
-      // Bottom Left
       ctx.beginPath();
       ctx.moveTo(-11, 5);
       ctx.lineTo(-11, 11);
       ctx.lineTo(-5, 11);
       ctx.stroke();
 
-      // Bottom Right
       ctx.beginPath();
       ctx.moveTo(5, 11);
       ctx.lineTo(11, 11);
@@ -995,7 +1472,6 @@ export class AssetGenerator {
       ctx.stroke();
     });
 
-    // 6.5 Close / Cross Icon
     this.drawCanvasTexture(scene, 'icon_close', 32, 32, (ctx) => {
       ctx.translate(16, 16);
       ctx.strokeStyle = '#FEDBCF';
@@ -1008,19 +1484,17 @@ export class AssetGenerator {
       ctx.stroke();
     });
 
-    // 6.6 Play Triangle Icon
-    this.drawCanvasTexture(scene, 'icon_play_triangle', 24, 24, (ctx) => {
-      ctx.translate(12, 12);
-      ctx.fillStyle = '#FFF8E7';
+    this.drawCanvasTexture(scene, 'icon_play_triangle', 32, 32, (ctx) => {
+      ctx.translate(16, 16);
+      ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.moveTo(-5, -8);
-      ctx.lineTo(8, 0);
-      ctx.lineTo(-5, 8);
+      ctx.moveTo(-7, -11);
+      ctx.lineTo(10, 0);
+      ctx.lineTo(-7, 11);
       ctx.closePath();
       ctx.fill();
     });
 
-    // 6.7 Replay / Restart Icon
     this.drawCanvasTexture(scene, 'icon_replay', 28, 28, (ctx) => {
       ctx.translate(14, 14);
       ctx.strokeStyle = '#FFF8E7';
@@ -1038,7 +1512,6 @@ export class AssetGenerator {
       ctx.fill();
     });
 
-    // 6.8 Home Icon
     this.drawCanvasTexture(scene, 'icon_home', 28, 28, (ctx) => {
       ctx.translate(14, 14);
       ctx.fillStyle = '#FEDBCF';
@@ -1054,7 +1527,6 @@ export class AssetGenerator {
       ctx.fill();
     });
 
-    // 6.9 Map Pin / Distance Icon
     this.drawCanvasTexture(scene, 'icon_pin', 24, 24, (ctx) => {
       ctx.translate(12, 12);
       ctx.fillStyle = '#FF7A00';
@@ -1099,6 +1571,59 @@ export class AssetGenerator {
       ctx.arc(0, 0, 8, 0, Math.PI * 2);
       ctx.fill();
     });
+  }
+
+  // ==========================================
+  // 8. CLEAN MASCOT TEXTURE (TRANSPARENT BACKGROUND)
+  // ==========================================
+  public static createCleanMascotTexture(scene: Phaser.Scene): void {
+    if (!scene.textures.exists('ui_mushak_logo')) return;
+    const texture = scene.textures.get('ui_mushak_logo');
+    const source = texture.getSourceImage() as HTMLImageElement;
+    if (!source || !source.width || !source.height) return;
+
+    const w = source.width;
+    const h = source.height;
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.drawImage(source, 0, 0);
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    const cx = w / 2;
+    const cy = h * 0.43;
+    const outerRadius = w * 0.36;
+
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = (y * w + x) * 4;
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        const dist = Math.hypot(x - cx, y - cy);
+        const maxDiff = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
+
+        // 1. Outside garland circle -> 100% transparent
+        if (dist > outerRadius + 8) {
+          data[i + 3] = 0;
+        } 
+        // 2. Grayscale checkerboard pattern tiles (both grey and white tiles)
+        else if (maxDiff < 20 && r > 70 && g > 70 && b > 70) {
+          data[i + 3] = 0;
+        }
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    if (scene.textures.exists('mushak_mascot_clean')) {
+      scene.textures.remove('mushak_mascot_clean');
+    }
+    scene.textures.addCanvas('mushak_mascot_clean', canvas);
   }
 
   // ==========================================
@@ -1155,3 +1680,4 @@ export class AssetGenerator {
     ctx.fill();
   }
 }
+

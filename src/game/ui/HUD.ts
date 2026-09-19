@@ -34,51 +34,46 @@ export class HUD {
     const isMobile = width < 768 || height > width;
 
     // Safe area calculation
-    const topSafeY = Math.max(26, height * 0.045);
+    const topSafeY = Math.max(24, Math.floor(height * 0.04));
     const leftMargin = isMobile ? 12 : 24;
     const rightMargin = isMobile ? 12 : 24;
 
     const bestScore = parseInt(localStorage.getItem('mushak_best_score') || '2680', 10);
 
     // ==========================================
-    // 1. TOP LEFT: Score, Distance & Durva Shield
+    // 1. TOP LEFT: Distance & Durva Shield
     // ==========================================
-    const scoreBoxW = isMobile ? 128 : 155;
-    const scoreBoxH = isMobile ? 44 : 48;
-    const scoreX = leftMargin + scoreBoxW / 2;
-    const scoreY = topSafeY + scoreBoxH / 2;
+    const leftBoxW = isMobile ? 110 : 130;
+    const leftBoxH = isMobile ? 40 : 44;
+    const leftBoxX = leftMargin + leftBoxW / 2;
+    const leftBoxY = topSafeY + leftBoxH / 2;
 
-    const scoreContainer = this.scene.add.container(scoreX, scoreY);
-    scoreContainer.setScrollFactor(0);
-    scoreContainer.setDepth(100);
+    const distContainer = this.scene.add.container(leftBoxX, leftBoxY);
+    distContainer.setScrollFactor(0);
+    distContainer.setDepth(100);
 
-    const scoreBg = this.scene.add.rectangle(0, 0, scoreBoxW, scoreBoxH, 0x1a0a05, 0.94);
-    scoreBg.setStrokeStyle(1.6, 0xffc72c);
+    const distBg = this.scene.add.rectangle(0, 0, leftBoxW, leftBoxH, 0x1a0a05, 0.92);
+    distBg.setStrokeStyle(1.6, 0xffc72c);
 
-    const modakIcon = this.scene.add.sprite(-scoreBoxW / 2 + 18, 0, 'modak').setScale(isMobile ? 0.54 : 0.62);
+    const distIcon = this.scene.add.text(-leftBoxW / 2 + 16, 0, '🚩', {
+      fontSize: isMobile ? '14px' : '16px'
+    }).setOrigin(0.5);
 
-    this.scoreText = this.scene.add.text(scoreBoxW / 2 - 10, -6, '0', {
+    this.distanceText = this.scene.add.text(leftBoxW / 2 - 10, 0, '0m', {
       fontFamily: '"Epilogue", sans-serif',
-      fontSize: isMobile ? '16px' : '19px',
-      color: '#FFC72C',
-      fontStyle: '900'
-    }).setOrigin(1, 0.5);
-
-    this.distanceText = this.scene.add.text(scoreBoxW / 2 - 10, 11, '0m', {
-      fontFamily: '"Plus Jakarta Sans", sans-serif',
-      fontSize: isMobile ? '9px' : '10.5px',
-      color: '#FEDBCF',
-      fontStyle: '800',
+      fontSize: isMobile ? '15px' : '17px',
+      color: '#FFF8E7',
+      fontStyle: '900',
       letterSpacing: 0.5
     }).setOrigin(1, 0.5);
 
-    scoreContainer.add([scoreBg, modakIcon, this.scoreText, this.distanceText]);
+    distContainer.add([distBg, distIcon, this.distanceText]);
 
-    // Durva Shield Timer Container (Stacked compactly underneath score)
-    const shieldW = isMobile ? 128 : 155;
+    // Durva Shield Timer Container (Stacked cleanly underneath Distance)
+    const shieldW = isMobile ? 124 : 140;
     const shieldH = isMobile ? 26 : 30;
-    const shieldX = scoreX;
-    const shieldY = scoreY + scoreBoxH / 2 + 6 + shieldH / 2;
+    const shieldX = leftMargin + shieldW / 2;
+    const shieldY = leftBoxY + leftBoxH / 2 + 6 + shieldH / 2;
 
     this.shieldContainer = this.scene.add.container(shieldX, shieldY);
     this.shieldContainer.setScrollFactor(0);
@@ -86,7 +81,7 @@ export class HUD {
     this.shieldContainer.setVisible(false);
 
     const shieldBg = this.scene.add.rectangle(0, 0, shieldW, shieldH, 0x1a0a05, 0.95);
-    shieldBg.setStrokeStyle(1.5, 0x88d982);
+    shieldBg.setStrokeStyle(1.6, 0x88d982);
 
     const shieldIcon = this.scene.add.sprite(-shieldW / 2 + 14, 0, 'durva').setScale(isMobile ? 0.40 : 0.48);
     this.scene.tweens.add({
@@ -122,19 +117,45 @@ export class HUD {
     // ==========================================
     // 2. TOP CENTER: Combo Multiplier Badge
     // ==========================================
-    this.comboBadge = this.scene.add.sprite(width / 2, topSafeY + 22, 'badge_combo_2');
+    this.comboBadge = this.scene.add.sprite(width / 2, topSafeY + 20, 'badge_combo_2');
     this.comboBadge.setScrollFactor(0);
     this.comboBadge.setDepth(100);
     this.comboBadge.setScale(isMobile ? 0.85 : 1.0);
     this.comboBadge.setVisible(false);
 
     // ==========================================
-    // 3. TOP RIGHT: Pause Button & Best Score Tag
+    // 3. TOP RIGHT: Score Panel & Pause Button
     // ==========================================
-    const pauseBtnSize = isMobile ? 44 : 48;
+    const pauseBtnSize = isMobile ? 40 : 44;
+    const scoreBoxW = isMobile ? 120 : 145;
+    const scoreBoxH = isMobile ? 40 : 44;
+
     const pauseX = width - rightMargin - pauseBtnSize / 2;
     const pauseY = topSafeY + pauseBtnSize / 2;
 
+    const scoreX = pauseX - pauseBtnSize / 2 - 8 - scoreBoxW / 2;
+    const scoreY = topSafeY + scoreBoxH / 2;
+
+    // Score Container
+    const scoreContainer = this.scene.add.container(scoreX, scoreY);
+    scoreContainer.setScrollFactor(0);
+    scoreContainer.setDepth(100);
+
+    const scoreBg = this.scene.add.rectangle(0, 0, scoreBoxW, scoreBoxH, 0x1a0a05, 0.92);
+    scoreBg.setStrokeStyle(1.6, 0xffc72c);
+
+    const modakIcon = this.scene.add.sprite(-scoreBoxW / 2 + 16, 0, 'modak').setScale(isMobile ? 0.52 : 0.60);
+
+    this.scoreText = this.scene.add.text(scoreBoxW / 2 - 10, 0, '0', {
+      fontFamily: '"Epilogue", sans-serif',
+      fontSize: isMobile ? '16px' : '19px',
+      color: '#FFC72C',
+      fontStyle: '900'
+    }).setOrigin(1, 0.5);
+
+    scoreContainer.add([scoreBg, modakIcon, this.scoreText]);
+
+    // Pause Button
     this.pauseBtnContainer = this.scene.add.container(pauseX, pauseY);
     this.pauseBtnContainer.setScrollFactor(0);
     this.pauseBtnContainer.setDepth(100);
@@ -144,7 +165,7 @@ export class HUD {
     pauseFace.setStrokeStyle(1.6, 0xffc72c);
     pauseFace.setInteractive({ useHandCursor: true });
 
-    const pauseIcon = this.scene.add.sprite(0, -1, 'btn_pause_ui').setScale(isMobile ? 0.82 : 0.92);
+    const pauseIcon = this.scene.add.sprite(0, -1, 'btn_pause_ui').setScale(isMobile ? 0.80 : 0.90);
     this.pauseBtnContainer.add([pauseBevel, pauseFace, pauseIcon]);
 
     pauseFace.on('pointerover', () => {
@@ -160,8 +181,8 @@ export class HUD {
       this.onPauseClick();
     });
 
-    // Best score indicator under pause button
-    this.bestScoreText = this.scene.add.text(pauseX, pauseY + pauseBtnSize / 2 + 8, `BEST ${bestScore.toLocaleString()}`, {
+    // Best score indicator under score box
+    this.bestScoreText = this.scene.add.text(scoreX, scoreY + scoreBoxH / 2 + 5, `BEST ${bestScore.toLocaleString()}`, {
       fontFamily: '"Plus Jakarta Sans", sans-serif',
       fontSize: isMobile ? '8px' : '9.5px',
       color: '#E0C0AF',

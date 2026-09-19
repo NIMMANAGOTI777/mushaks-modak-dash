@@ -65,21 +65,28 @@ export class GameScene extends Phaser.Scene {
       }
     });
 
-    // 2. Parallax Environment (Edge-to-Edge)
+    // 2. Parallax Environment (Edge-to-Edge Single Background)
     if (this.textures.exists('ui_festive_street_bg')) {
       const bg = this.add.image(width / 2, height / 2, 'ui_festive_street_bg');
       const bgScale = Math.max(width / bg.width, height / bg.height);
       bg.setScale(bgScale).setScrollFactor(0);
-      this.add.rectangle(width / 2, height / 2, width, height, 0x120907, 0.35).setScrollFactor(0);
+      bg.setName('main_bg_image');
+
+      // Subtle atmospheric vignette overlay for crisp contrast
+      const vignette = this.add.rectangle(width / 2, height / 2, width, height, 0x120907, 0.28).setScrollFactor(0);
+      vignette.setName('vignette_overlay');
+
+      // Subtle golden ground runner path to give clear lane contrast without duplicating background
+      const groundPath = this.add.rectangle(width / 2, groundY + 40, width, 120, 0x1a0a05, 0.45).setScrollFactor(0);
+      groundPath.setName('ground_path');
     } else {
       this.bgSky = this.add.tileSprite(0, 0, width, height, 'bg_sky').setOrigin(0, 0).setScrollFactor(0);
+      this.bgPandals = this.add.tileSprite(0, groundY - 260, width, 300, 'bg_pandals').setOrigin(0, 0).setScrollFactor(0);
+      this.groundStreet = this.add.tileSprite(0, groundY - 20, width, 160, 'ground_street').setOrigin(0, 0).setScrollFactor(0);
+      this.groundStreet.setDepth(10);
     }
 
-    this.bgPandals = this.add.tileSprite(0, groundY - 260, width, 300, 'bg_pandals').setOrigin(0, 0).setScrollFactor(0);
-    this.groundStreet = this.add.tileSprite(0, groundY - 20, width, 160, 'ground_street').setOrigin(0, 0).setScrollFactor(0);
-    this.groundStreet.setDepth(10);
-
-    // Invisible Ground Collider
+    // Invisible Ground Collider for arcade physics
     this.groundCollider = this.add.rectangle(width / 2, groundY + 10, width * 2, 20, 0x000000, 0);
     this.physics.add.existing(this.groundCollider, true);
 
@@ -123,6 +130,23 @@ export class GameScene extends Phaser.Scene {
     const width = gameSize.width;
     const height = gameSize.height;
     const groundY = GAME_CONFIG.getGroundY(height, width);
+
+    const bg = this.children.getByName('main_bg_image') as Phaser.GameObjects.Image;
+    if (bg) {
+      bg.setPosition(width / 2, height / 2);
+      const bgScale = Math.max(width / bg.width, height / bg.height);
+      bg.setScale(bgScale);
+    }
+    const vignette = this.children.getByName('vignette_overlay') as Phaser.GameObjects.Rectangle;
+    if (vignette) {
+      vignette.setPosition(width / 2, height / 2);
+      vignette.setSize(width, height);
+    }
+    const groundPath = this.children.getByName('ground_path') as Phaser.GameObjects.Rectangle;
+    if (groundPath) {
+      groundPath.setPosition(width / 2, groundY + 40);
+      groundPath.setSize(width, 120);
+    }
 
     if (this.bgSky) this.bgSky.setSize(width, height);
     if (this.bgPandals) {
@@ -176,8 +200,12 @@ export class GameScene extends Phaser.Scene {
     if (this.bgSky) {
       this.bgSky.tilePositionX += speed * 0.08 * deltaSec;
     }
-    this.bgPandals.tilePositionX += speed * 0.25 * deltaSec;
-    this.groundStreet.tilePositionX += speed * 1.0 * deltaSec;
+    if (this.bgPandals) {
+      this.bgPandals.tilePositionX += speed * 0.25 * deltaSec;
+    }
+    if (this.groundStreet) {
+      this.groundStreet.tilePositionX += speed * 1.0 * deltaSec;
+    }
 
     // Player Update
     this.mushak.update();

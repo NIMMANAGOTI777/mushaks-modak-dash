@@ -152,6 +152,14 @@ export class AudioSystem {
     osc.stop(now + 0.45);
   }
 
+  public playDurvaCollect(): void {
+    this.playDurvaShield();
+  }
+
+  public playLevelUp(): void {
+    this.playComboActivate(3);
+  }
+
   // Combo Multiplier Activation (x2 or x3)
   public playComboActivate(tier: 2 | 3): void {
     if (this.isSfxMuted || !this.ctx) return;

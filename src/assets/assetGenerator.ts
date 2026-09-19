@@ -1472,6 +1472,17 @@ export class AssetGenerator {
       ctx.stroke();
     });
 
+    this.drawCanvasTexture(scene, 'btn_pause_ui', 32, 32, (ctx) => {
+      ctx.translate(16, 16);
+      ctx.fillStyle = '#FFE082';
+      ctx.beginPath();
+      ctx.roundRect(-8, -9, 5, 18, 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.roundRect(3, -9, 5, 18, 2);
+      ctx.fill();
+    });
+
     this.drawCanvasTexture(scene, 'icon_close', 32, 32, (ctx) => {
       ctx.translate(16, 16);
       ctx.strokeStyle = '#FEDBCF';

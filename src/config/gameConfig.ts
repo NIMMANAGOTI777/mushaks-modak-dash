@@ -28,13 +28,19 @@ export const GAME_CONFIG = {
   },
 
   // Dynamic Responsive Helpers
-  getGroundY: (screenHeight: number) => {
-    return screenHeight - 90;
+  isMobilePortrait: (width: number, height: number) => {
+    return width < 768 || height > width;
   },
 
-  getLaneXPositions: (screenWidth: number) => {
-    const isMobile = screenWidth < 600;
+  getGroundY: (screenHeight: number, screenWidth?: number) => {
+    const isMobile = (screenWidth && screenWidth < 768) || window.innerWidth < 768 || screenHeight > (screenWidth || window.innerWidth);
+    return isMobile ? screenHeight - 128 : screenHeight - 90;
+  },
+
+  getLaneXPositions: (screenWidth: number, screenHeight?: number) => {
+    const isMobile = screenWidth < 768 || (screenHeight !== undefined && screenHeight > screenWidth);
     if (isMobile) {
+      // Well-spaced 3 lanes for mobile portrait
       return [screenWidth * 0.22, screenWidth * 0.50, screenWidth * 0.78];
     }
     // Desktop / widescreen
@@ -70,3 +76,76 @@ export const GAME_CONFIG = {
 };
 
 export type GameDifficulty = 'EASY' | 'MEDIUM' | 'HARD';
+
+export interface PerformanceGrade {
+  rank: 'S' | 'A' | 'B' | 'C' | 'D';
+  title: string;
+  minScore: number;
+  message: string;
+  badgeBgColor: number;
+  badgeBorderColor: number;
+  textColor: string;
+  badgeStroke: number;
+}
+
+export const PERFORMANCE_GRADES: PerformanceGrade[] = [
+  {
+    rank: 'S',
+    title: 'Festival Legend',
+    minScore: 5000,
+    message: 'An incredible festival run!',
+    badgeBgColor: 0x39251d,
+    badgeBorderColor: 0xffc72c,
+    textColor: '#FFC72C',
+    badgeStroke: 0xffe082
+  },
+  {
+    rank: 'A',
+    title: 'Modak Master',
+    minScore: 3000,
+    message: 'Brilliant modak collecting!',
+    badgeBgColor: 0x39251d,
+    badgeBorderColor: 0xf97316,
+    textColor: '#F97316',
+    badgeStroke: 0xffb68b
+  },
+  {
+    rank: 'B',
+    title: 'Pandal Runner',
+    minScore: 1500,
+    message: 'Great run! Keep dashing!',
+    badgeBgColor: 0x223620,
+    badgeBorderColor: 0x22c55e,
+    textColor: '#88D982',
+    badgeStroke: 0xa3f69c
+  },
+  {
+    rank: 'C',
+    title: 'Modak Collector',
+    minScore: 500,
+    message: 'Nice start. Keep practicing!',
+    badgeBgColor: 0x2e1b14,
+    badgeBorderColor: 0xe0c0af,
+    textColor: '#FFF8E7',
+    badgeStroke: 0xfedbcf
+  },
+  {
+    rank: 'D',
+    title: 'First Dash',
+    minScore: 0,
+    message: 'Every great run starts here!',
+    badgeBgColor: 0x1f140f,
+    badgeBorderColor: 0x8b5e3c,
+    textColor: '#A78B7C',
+    badgeStroke: 0x584235
+  }
+];
+
+export function getPerformanceGrade(score: number): PerformanceGrade {
+  for (const grade of PERFORMANCE_GRADES) {
+    if (score >= grade.minScore) {
+      return grade;
+    }
+  }
+  return PERFORMANCE_GRADES[PERFORMANCE_GRADES.length - 1];
+}

@@ -8,100 +8,129 @@ export class PauseScene extends Phaser.Scene {
 
   public create(): void {
     const { width, height } = this.scale;
+    const isMobile = width < 768 || height > width;
 
     // Translucent dark festival backdrop
-    this.add.rectangle(width / 2, height / 2, width, height, 0x1a0a05, 0.85);
+    this.add.rectangle(width / 2, height / 2, width, height, 0x1a0a05, 0.88);
 
     // Modal Card (Screen 05 from UI Suite)
-    const cardW = 360;
-    const cardH = 390;
-    const card = this.add.rectangle(width / 2, height / 2, cardW, cardH, 0x2e1b14, 0.98);
-    card.setStrokeStyle(2.5, 0xffc72c);
+    const cardW = isMobile ? Math.min(350, width * 0.9) : 380;
+    const cardH = isMobile ? 390 : 410;
+    const cardContainer = this.add.container(width / 2, height / 2);
+
+    const cardBg = this.add.rectangle(0, 0, cardW, cardH, 0x2e1b14, 0.98);
+    cardBg.setStrokeStyle(2.5, 0xffc72c);
 
     // Pause Icon in circular well
-    const iconCircle = this.add.circle(width / 2, height / 2 - 135, 26, 0x39251d);
+    const iconCircle = this.add.circle(0, -cardH / 2 + 42, 24, 0x39251d);
     iconCircle.setStrokeStyle(1.5, 0xffc72c);
-    this.add.text(width / 2, height / 2 - 135, '⏸', {
-      fontSize: '20px',
-      color: '#FFC72C'
-    }).setOrigin(0.5);
+    const pauseIcon = this.add.sprite(0, -cardH / 2 + 42, 'btn_pause_ui').setScale(0.85);
 
     // Title & Subtitle
-    this.add.text(width / 2, height / 2 - 90, 'PANDAL PAUSED', {
+    const titleText = this.add.text(0, -cardH / 2 + 82, 'PANDAL PAUSED', {
       fontFamily: '"Epilogue", sans-serif',
-      fontSize: '22px',
+      fontSize: isMobile ? '20px' : '22px',
       color: '#FFC72C',
       fontStyle: '900'
     }).setOrigin(0.5);
 
-    this.add.text(width / 2, height / 2 - 68, 'Mushak is catching his breath', {
+    const subtitleText = this.add.text(0, -cardH / 2 + 106, 'Mushak is catching his breath', {
       fontFamily: '"Plus Jakarta Sans", sans-serif',
-      fontSize: '12px',
-      color: '#E0C0AF'
+      fontSize: '11.5px',
+      color: '#E0C0AF',
+      fontStyle: '500'
     }).setOrigin(0.5);
 
-    // 1. Resume Dash (Primary 3D Button)
-    this.create3DButton(width / 2, height / 2 - 20, 'RESUME DASH ▶', 260, 48, 0xff7a00, 0x8b2500, 0xffe082, () => {
-      AudioSystem.getInstance().playButtonClick();
-      AudioSystem.getInstance().resumeBGM();
-      this.scene.stop();
-      this.scene.resume('GameScene');
-    });
+    cardContainer.add([cardBg, iconCircle, pauseIcon, titleText, subtitleText]);
+
+    const btnW = cardW * 0.82;
+
+    // 1. Resume Dash (Primary 3D Saffron Button)
+    const resumeBtn = this.create3DButton(
+      0,
+      -cardH / 2 + 160,
+      'RESUME DASH ▶',
+      btnW,
+      48,
+      0xff7a00,
+      0x8b2500,
+      0xffe082,
+      () => {
+        AudioSystem.getInstance().playButtonClick();
+        AudioSystem.getInstance().resumeBGM();
+        this.scene.stop();
+        this.scene.resume('GameScene');
+      }
+    );
 
     // 2. Restart Run (Secondary 3D Button)
-    this.create3DButton(width / 2, height / 2 + 35, 'RESTART RUN 🔄', 260, 44, 0x39251d, 0x120907, 0xffc72c, () => {
-      AudioSystem.getInstance().playButtonClick();
-      this.scene.stop();
-      this.scene.start('GameScene');
-    });
+    const restartBtn = this.create3DButton(
+      0,
+      -cardH / 2 + 218,
+      'RESTART RUN 🔄',
+      btnW,
+      44,
+      0x39251d,
+      0x120907,
+      0xffc72c,
+      () => {
+        AudioSystem.getInstance().playButtonClick();
+        this.scene.stop();
+        this.scene.start('GameScene');
+      }
+    );
+
+    cardContainer.add([resumeBtn, restartBtn]);
 
     // 3. Audio Toggles Container (Screen 05 Audio Tray)
-    const audioY = height / 2 + 95;
-    const audioBox = this.add.rectangle(width / 2, audioY, 260, 42, 0x200f08, 0.95);
-    audioBox.setStrokeStyle(1, 0x584235);
+    const audioBoxY = -cardH / 2 + 282;
+    const audioBox = this.add.rectangle(0, audioBoxY, btnW, 46, 0x200f08, 0.95);
+    audioBox.setStrokeStyle(1.2, 0x584235);
 
     const soundState = AudioSystem.getInstance().getSoundState();
 
     // Music Toggle
-    const musicContainer = this.add.container(width / 2 - 65, audioY);
-    const musicLabel = this.add.text(-20, 0, '🎵 Music', {
+    const musicContainer = this.add.container(-btnW * 0.26, audioBoxY);
+    const musicLabel = this.add.text(-18, 0, 'Music', {
       fontFamily: '"Plus Jakarta Sans", sans-serif',
-      fontSize: '12px',
+      fontSize: '11.5px',
       color: '#FEDBCF',
-      fontStyle: '600'
+      fontStyle: '700'
     }).setOrigin(0.5);
-    const musicToggleBg = this.add.rectangle(35, 0, 36, 18, soundState.music ? 0x88d982 : 0x453028, 1)
+    const musicToggleBg = this.add.rectangle(28, 0, 36, 18, soundState.music ? 0x88d982 : 0x453028, 1)
       .setInteractive({ useHandCursor: true });
-    const musicThumb = this.add.circle(soundState.music ? 44 : 26, 0, 7, 0xffffff);
+    const musicThumb = this.add.circle(soundState.music ? 36 : 20, 0, 7, 0xffffff);
 
     musicToggleBg.on('pointerdown', () => {
       const active = AudioSystem.getInstance().toggleMusic();
       musicToggleBg.setFillStyle(active ? 0x88d982 : 0x453028);
-      musicThumb.x = active ? 44 : 26;
+      musicThumb.x = active ? 36 : 20;
     });
     musicContainer.add([musicLabel, musicToggleBg, musicThumb]);
 
     // SFX Toggle
-    const sfxContainer = this.add.container(width / 2 + 65, audioY);
-    const sfxLabel = this.add.text(-20, 0, '🔊 SFX', {
+    const sfxContainer = this.add.container(btnW * 0.26, audioBoxY);
+    const sfxLabel = this.add.text(-18, 0, 'SFX', {
       fontFamily: '"Plus Jakarta Sans", sans-serif',
-      fontSize: '12px',
+      fontSize: '11.5px',
       color: '#FEDBCF',
-      fontStyle: '600'
+      fontStyle: '700'
     }).setOrigin(0.5);
-    const sfxToggleBg = this.add.rectangle(35, 0, 36, 18, soundState.sfx ? 0x88d982 : 0x453028, 1)
+    const sfxToggleBg = this.add.rectangle(24, 0, 36, 18, soundState.sfx ? 0x88d982 : 0x453028, 1)
       .setInteractive({ useHandCursor: true });
-    const sfxThumb = this.add.circle(soundState.sfx ? 44 : 26, 0, 7, 0xffffff);
+    const sfxThumb = this.add.circle(soundState.sfx ? 32 : 16, 0, 7, 0xffffff);
 
     sfxToggleBg.on('pointerdown', () => {
       const active = AudioSystem.getInstance().toggleSFX();
       sfxToggleBg.setFillStyle(active ? 0x88d982 : 0x453028);
-      sfxThumb.x = active ? 44 : 26;
+      sfxThumb.x = active ? 32 : 16;
     });
     sfxContainer.add([sfxLabel, sfxToggleBg, sfxThumb]);
 
+    cardContainer.add([audioBox, musicContainer, sfxContainer]);
+
     // 4. Quit to Main Menu
-    const quitText = this.add.text(width / 2, height / 2 + 150, 'QUIT TO MAIN MENU', {
+    const quitText = this.add.text(0, cardH / 2 - 28, 'QUIT TO MAIN MENU', {
       fontFamily: '"Epilogue", sans-serif',
       fontSize: '12px',
       color: '#E0C0AF',
@@ -117,6 +146,17 @@ export class PauseScene extends Phaser.Scene {
       this.scene.stop('GameScene');
       this.scene.stop();
       this.scene.start('MainMenuScene');
+    });
+
+    cardContainer.add(quitText);
+
+    // Enter animation
+    cardContainer.setScale(0.9);
+    this.tweens.add({
+      targets: cardContainer,
+      scale: 1.0,
+      duration: 200,
+      ease: 'Back.easeOut'
     });
   }
 
@@ -140,14 +180,14 @@ export class PauseScene extends Phaser.Scene {
 
     const label = this.add.text(0, -1, text, {
       fontFamily: '"Epilogue", sans-serif',
-      fontSize: '14px',
+      fontSize: '13px',
       color: '#FFF8E7',
       fontStyle: '900'
     }).setOrigin(0.5);
 
     container.add([bevel, face, label]);
 
-    face.on('pointerover', () => container.setScale(1.04));
+    face.on('pointerover', () => container.setScale(1.03));
     face.on('pointerout', () => container.setScale(1.0));
     face.on('pointerdown', () => {
       container.y += 2;

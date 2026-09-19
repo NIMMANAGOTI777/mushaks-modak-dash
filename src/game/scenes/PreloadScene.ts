@@ -139,8 +139,24 @@ export class PreloadScene extends Phaser.Scene {
       onComplete: () => {
         percentText.setText('100%');
         statusText.setText('🎉 Ready to Dash!');
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetScene = urlParams.get('scene') || 'MainMenuScene';
         this.time.delayedCall(300, () => {
-          this.scene.start('MainMenuScene');
+          if (targetScene === 'GameOverScene') {
+            this.scene.start('GameOverScene', {
+              stats: {
+                score: 3450,
+                distance: 480,
+                regularModaks: 24,
+                jumboModaks: 4,
+                durvaCollected: 2,
+                maxCombo: 3,
+                playTimeSeconds: 45
+              }
+            });
+          } else {
+            this.scene.start(targetScene);
+          }
         });
       }
     });

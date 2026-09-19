@@ -46,8 +46,8 @@ export class GameScene extends Phaser.Scene {
 
   public create(): void {
     const { width, height } = this.scale;
-    const groundY = GAME_CONFIG.getGroundY(height);
-    const lanes = GAME_CONFIG.getLaneXPositions(width);
+    const groundY = GAME_CONFIG.getGroundY(height, width);
+    const lanes = GAME_CONFIG.getLaneXPositions(width, height);
 
     this.isGameOver = false;
     this.isPaused = false;
@@ -67,14 +67,16 @@ export class GameScene extends Phaser.Scene {
 
     // 2. Parallax Environment (Edge-to-Edge)
     if (this.textures.exists('ui_festive_street_bg')) {
-      this.bgSky = this.add.tileSprite(0, 0, width, height, 'ui_festive_street_bg').setOrigin(0, 0).setScrollFactor(0);
-      this.add.rectangle(width / 2, height / 2, width, height, 0x120907, 0.30).setScrollFactor(0);
+      const bg = this.add.image(width / 2, height / 2, 'ui_festive_street_bg');
+      const bgScale = Math.max(width / bg.width, height / bg.height);
+      bg.setScale(bgScale).setScrollFactor(0);
+      this.add.rectangle(width / 2, height / 2, width, height, 0x120907, 0.35).setScrollFactor(0);
     } else {
       this.bgSky = this.add.tileSprite(0, 0, width, height, 'bg_sky').setOrigin(0, 0).setScrollFactor(0);
     }
 
     this.bgPandals = this.add.tileSprite(0, groundY - 260, width, 300, 'bg_pandals').setOrigin(0, 0).setScrollFactor(0);
-    this.groundStreet = this.add.tileSprite(0, groundY - 20, width, 140, 'ground_street').setOrigin(0, 0).setScrollFactor(0);
+    this.groundStreet = this.add.tileSprite(0, groundY - 20, width, 160, 'ground_street').setOrigin(0, 0).setScrollFactor(0);
     this.groundStreet.setDepth(10);
 
     // Invisible Ground Collider
@@ -120,7 +122,7 @@ export class GameScene extends Phaser.Scene {
   private handleResize(gameSize: Phaser.Structs.Size): void {
     const width = gameSize.width;
     const height = gameSize.height;
-    const groundY = GAME_CONFIG.getGroundY(height);
+    const groundY = GAME_CONFIG.getGroundY(height, width);
 
     if (this.bgSky) this.bgSky.setSize(width, height);
     if (this.bgPandals) {
@@ -128,7 +130,7 @@ export class GameScene extends Phaser.Scene {
       this.bgPandals.y = groundY - 260;
     }
     if (this.groundStreet) {
-      this.groundStreet.setSize(width, 140);
+      this.groundStreet.setSize(width, 160);
       this.groundStreet.y = groundY - 20;
     }
     if (this.groundCollider) {
@@ -171,7 +173,9 @@ export class GameScene extends Phaser.Scene {
     const speed = this.difficultySystem.getSpeed();
 
     // Parallax Scrolling
-    this.bgSky.tilePositionX += speed * 0.08 * deltaSec;
+    if (this.bgSky) {
+      this.bgSky.tilePositionX += speed * 0.08 * deltaSec;
+    }
     this.bgPandals.tilePositionX += speed * 0.25 * deltaSec;
     this.groundStreet.tilePositionX += speed * 1.0 * deltaSec;
 
@@ -217,7 +221,7 @@ export class GameScene extends Phaser.Scene {
   // ==========================================
   private spawnCollectiblePattern(): void {
     const spawnX = this.scale.width + 80;
-    const groundY = GAME_CONFIG.getGroundY(this.scale.height);
+    const groundY = GAME_CONFIG.getGroundY(this.scale.height, this.scale.width);
 
     const roll = Math.random();
     let type: CollectibleType = 'MODAK';
@@ -247,7 +251,7 @@ export class GameScene extends Phaser.Scene {
 
   private spawnObstaclePattern(): void {
     const spawnX = this.scale.width + 100;
-    const groundY = GAME_CONFIG.getGroundY(this.scale.height);
+    const groundY = GAME_CONFIG.getGroundY(this.scale.height, this.scale.width);
     const tier = this.difficultySystem.getDifficulty();
 
     const obsTypes: ObstacleType[] = ['FLOWER_CART', 'CRATES', 'BARRIER', 'POT', 'HANGING'];

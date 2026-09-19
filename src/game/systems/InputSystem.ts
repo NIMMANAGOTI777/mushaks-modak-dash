@@ -77,13 +77,23 @@ export class InputSystem {
 
   private initTouch(): void {
     this.scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      // Ignore clicks on UI buttons which handle their own inputs
+      const height = this.scene.scale.height;
+      const isMobile = this.scene.scale.width < 768 || height > this.scene.scale.width;
+
+      // Ignore touch starts in the bottom button control area so buttons and gestures don't conflict
+      if (isMobile && pointer.y > height - 120) {
+        this.touchStartTime = 0;
+        return;
+      }
+
       this.touchStartX = pointer.x;
       this.touchStartY = pointer.y;
       this.touchStartTime = Date.now();
     });
 
     this.scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      if (this.touchStartTime === 0) return;
+
       const deltaX = pointer.x - this.touchStartX;
       const deltaY = pointer.y - this.touchStartY;
       const deltaTime = Date.now() - this.touchStartTime;
